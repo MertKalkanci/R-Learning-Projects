@@ -15,13 +15,13 @@ output <- Outer_func() # To call the Outer_func
 output(my_list)
 
 Data_Frame <- data.frame (
-  Pulse = list(100, 150, 120),
-  Training = list("Strength", "Stamina", "Other"),
-  Duration = list(60, 30, 45)
+  Pulse = c(100, 150, 120),
+  Training = c(99, 32, 52),
+  Duration = c(60, 30, 45)
 )
 
+Data_Frame <- rbind(Data_Frame, c(100, 110, 110))
+
+Data_Frame <- Data_Frame[c(1:5),]
+
 print(Data_Frame)
-
-New_row_DF <- rbind(Data_Frame, c("tada", 110, 110))
-
-print(New_row_DF)
