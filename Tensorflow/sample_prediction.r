@@ -4,13 +4,7 @@ library(keras)
 library(readr)
 library(dplyr)
 library(tidyr)
-library(ggplot2)
 
-#path <- "C:/Program Files/Anaconda/python.exe"
-
-#virtualenv_create("r-reticulate", python = path)
-#install_tensorflow(envname = "r-reticulate")
-#install_keras(envname = "r-reticulate")
 use_virtualenv("r-reticulate")
 
 # arrange dataframe
@@ -37,33 +31,11 @@ y_test <- Y[(nrow(df) * 0.9 + 1):nrow(df)]
 
 #model
 
-model <- keras_model_sequential() %>%
-    layer_dense(units = 64, activation = "relu", input_shape = c(21)) %>%
-    layer_dense(units = 64, activation = "relu") %>%
-    layer_dense(units = 3, activation = "softmax")
-
-model %>% compile(
-    loss = "sparse_categorical_crossentropy",
-    optimizer = optimizer_adam(),
-    metrics = "accuracy"
-)
-
-summary(model)
-
-history <- model %>% 
-    fit(
-        x_train, y_train,
-        epochs = 10, batch_size = 32,
-        validation_split = 0.3
-    )
+model <- load_model_hdf5('Tensorflow/simple_prediction_model.h5')
 
 evaluation <- evaluate(model, x_test, y_test)
 
-# show history & evaluation
-
-plot(history, method = "base", col = c("red", "blue")) 
-
+# show evaluation
 
 print(evaluation)
 
-save_model_hdf5(model, "Tensorflow/simple_prediction_model.h5")
