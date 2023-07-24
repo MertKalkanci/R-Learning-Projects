@@ -61,7 +61,7 @@ evaluation <- evaluate(model, x_test, y_test)
 
 # show history & evaluation
 
-plot(history, metrics = 'accuracy', method = "base") 
+plot(history, method = "base", type = "o", col = c("red", "blue")) 
 
 
 print(evaluation)
