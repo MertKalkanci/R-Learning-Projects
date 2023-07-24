@@ -9,7 +9,7 @@ print(head(df))
 
 
 plot <- ggplot(data = df, aes(x = Xval, y = Yval)) + 
-  geom_line(aes(color = Xval))+
-  labs(title = "Normal Distribution", x = "X", y = "Frequency", color = "X Value")
+  geom_line(aes(color = Yval))+
+  labs(title = "Normal Distribution", x = "X", y = "Frequency", color = "Y Value")
 
 show(plot)
