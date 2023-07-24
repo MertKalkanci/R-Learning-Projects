@@ -61,7 +61,9 @@ evaluation <- evaluate(model, x_test, y_test)
 
 # show history & evaluation
 
-plot(history, method = "base", type = "o", col = c("red", "blue")) 
+plot(history, method = "base", col = c("red", "blue")) 
 
 
 print(evaluation)
+
+save_model_hdf5(model, "Tensorflow/simple_prediction_model.h5")
