@@ -10,6 +10,7 @@ print(head(df))
 
 plot <- ggplot(data = df, aes(x = Xval, y = Yval)) + 
   geom_point(aes(color = Yval))+
-  labs(title = "Normal Distribution", x = "X", y = "Frequency", color = "Y Value")
+  geom_vline(aes(xintercept = mean(Xval, na.rm = TRUE)), color = "black")+
+  labs(title = "Normal Distribution", x = "X", y = "Value", color = "Y Value")
 
 show(plot)
