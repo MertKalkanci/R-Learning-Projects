@@ -27,7 +27,7 @@ plot_1 <- ggplot(data = data, aes(x = date, y = total_case)) +
   geom_hline(aes(yintercept = quantile(data$total_case, 0.75, na.rm = TRUE))) +
   labs(
     title = "Total Cases in Turkey",
-        subtitle = paste("From March 2020 to March 2021 Variation : ", var(data$total_case) ),
+        subtitle = paste("From March 2020 to November 2020, Variation : ", var(data$total_case) ),
        x = "Date",
        y = "Total Cases"
        )
@@ -41,16 +41,16 @@ plot_2 <- ggplot(data = data,aes(x = date, y = daily_death)) +
   geom_hline(aes(yintercept = quantile(data$daily_death, 0.75, na.rm = TRUE))) +
   labs(
     title = "Daily Deaths in Turkey",
-    subtitle = "From March 2020 to March 2021",
+    subtitle = "From March 2020 to November 2020",
     x = "Date",
     y = "Daily Deaths",
     )
 
 plot_3 <- ggplot(data = data, aes(x = total_intubated, y = total_case)) +
-  geom_point(color = data$total_intubated) +
+  geom_point() +
   labs(
     title = "Total Intubated/Cases in Turkey",
-    subtitle = "From March 2020 to March 2021",
+    subtitle = "From March 2020 to November 2020",
     x = "Total Intubated",
     y = "Total Cases"
   )
