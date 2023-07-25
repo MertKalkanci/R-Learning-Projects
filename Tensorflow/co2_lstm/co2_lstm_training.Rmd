@@ -1,0 +1,109 @@
+---
+Title: "R Notebook"
+Output: "html_notebook"
+---
+```{r}
+#libraries
+library(reticulate)
+library(keras)
+library(readr)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+
+use_virtualenv("r-reticulate")
+```
+
+
+```{r} 
+#read csv file
+
+df <- read_csv("Tensorflow/Agrofood_co2_emission.csv")
+
+
+```
+
+```{r}
+
+#data cleaning
+
+summary(df)
+
+df <- df %>%
+    select(Area, Year, `Forest fires`)%>%
+    filter(Area == "United States of America")
+
+    
+
+```
+
+```{r}
+#plotting
+
+ggplot(df, aes(x = Year, y = `Forest fires`)) +
+    geom_line() +
+    labs(title = "Average Forest fire in United States of America",
+         x = "Year",
+         y = "Forest fire")
+
+```
+
+```{r}
+look_back <- 15
+
+model <- keras_model_sequential() %>%
+    layer_lstm(units = 256, input_shape = c(look_back,1) , return_sequences = TRUE) %>%
+    layer_lstm(units = 128, return_sequences = FALSE) %>%
+    layer_dense(units = 64) %>%
+    layer_dense(units = 1)
+
+compile(model, loss = "mean_squared_error", optimizer = "adam",metrics = "accuracy")
+
+
+summary(model)
+```
+
+
+
+```{r}
+#data preprocessing
+
+df_forest <- df %>%
+    select(`Forest fires`) %>%
+    normalize(axis = 1)
+
+
+x <- array(0, dim = c(nrow(df_forest) - (look_back + 1), look_back))
+
+for (i in (1:(nrow(df_forest) - (look_back + 1)))) {
+    for (j in (1:look_back)) {
+        x[i,j] <- df_forest[i + j - 1,1]
+    }
+}
+
+print(x)
+
+y <- array(0, dim = c(nrow(df_forest) - (look_back + 1)))
+
+for (i in (1:(nrow(df_forest) - (look_back + 1)))) {
+    y[i] <- df_forest[i + look_back + 1,1]
+}
+print(y)
+```
+
+```{r}
+
+#training
+history <- model %>%
+    fit(x,y,epochs = 100, batch_size = 64, validation_split = 0.2)
+
+plot(history)
+
+```
+
+```{r}
+#save model
+save_model_hdf5(model, "Tensorflow/lstm_co2_model.h5")
+    
+```
+

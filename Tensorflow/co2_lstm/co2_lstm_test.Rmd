@@ -1,0 +1,141 @@
+---
+Title: "R Notebook"
+Output: "html_notebook"
+---
+```{r}
+#libraries
+library(reticulate)
+library(keras)
+library(readr)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+
+use_virtualenv("r-reticulate")
+```
+
+
+```{r} 
+#read csv file
+
+df <- read_csv("Tensorflow/Agrofood_co2_emission.csv")
+
+
+```
+
+```{r}
+
+#data cleaning
+
+summary(df)
+
+df <- df %>%
+    select(Area, Year, `Forest fires`)%>%
+    filter(Area == "United States of America")
+
+    
+
+```
+
+```{r}
+#plotting
+
+ggplot(df, aes(x = Year, y = `Forest fires`)) +
+    geom_line() +
+    labs(title = "Average Forest fire in United States of America",
+         x = "Year",
+         y = "Forest fire")
+
+```
+
+
+
+```{r}
+#data preprocessing
+
+df_forest <- df %>%
+    select(`Forest fires`) %>%
+    normalize(axis = 1)
+
+
+x <- array(0, dim = c(nrow(df_forest) - (look_back + 1), look_back))
+
+for (i in (1:(nrow(df_forest) - (look_back + 1)))) {
+    for (j in (1:look_back)) {
+        x[i,j] <- df_forest[i + j - 1,1]
+    }
+}
+
+print(x)
+
+y <- array(0, dim = c(nrow(df_forest) - (look_back + 1)))
+
+for (i in (1:(nrow(df_forest) - (look_back + 1)))) {
+    y[i] <- df_forest[i + look_back + 1,1]
+}
+print(y)
+```
+
+```{r}
+
+#model
+look_back = 15
+model <- load_model_hdf5("Tensorflow/lstm_co2_model.h5")
+
+```
+
+```{r}
+
+#prediction
+
+res <- model %>%
+    predict(x)
+print(res[1])
+print(y[1])
+```
+
+```{r}
+
+#predicting 10 years
+
+next_years <- 10
+output <- c()
+
+for (i in 1:next_years){
+    
+    res <- model %>%
+        predict(x)
+
+    last_element <- x[-c(1:(length(x[,1]) - 1))]
+    last_element <- append(last_element[2:look_back], tail(res, n = 1))
+    x <- rbind(x, last_element)
+    
+    output <- append(output, tail(res, n = 1))
+    
+}
+
+```
+
+```{r}
+
+#plotting
+
+x_value <- append(df$Year,( ((df$Year[length(df$Year)]) + 1) : (df$Year[length(df$Year)] + next_years) ))
+y_value <- append(df_forest[,1], output)
+
+print(paste("The predicted value for the next", x_value, "years is", y_value))
+
+df_output <- data.frame(
+    x_val = x_value,
+    y_val = y_value
+)
+ggplot(df_output, aes(x = x_val, y = y_val)) +
+    geom_line(aes(color = c(y_val))) +
+    geom_vline(xintercept = df$Year[length(df$Year)], color = "red") +
+    labs(title = "Average Forest fire in United States of America",
+        subtitle = "Red line indicates the last year of the dataset",
+         x = "Year",
+         y = "Forest fire",
+         color = "Forest fire")
+
+```
