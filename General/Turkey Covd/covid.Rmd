@@ -1,0 +1,62 @@
+```{r}
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(cowplot)
+```
+
+```{r}
+#read data
+data <- read_csv("General/Turkey Covd/covid19-turkey-data.csv")
+
+head(data, 10)
+tail(data, 10)
+```
+```
+
+```{r}
+#plotting
+
+
+plot_1 <- ggplot(data = data, aes(x = date, y = total_case)) +
+  geom_point() +
+  geom_smooth(method = "loess", se = FALSE) + 
+  geom_hline(aes(yintercept = quantile(data$total_case, 0.25, na.rm = TRUE))) +
+  geom_hline(aes(yintercept = quantile(data$total_case, 0.5, na.rm = TRUE))) + 
+  geom_hline(aes(yintercept = quantile(data$total_case, 0.75, na.rm = TRUE))) +
+  labs(
+    title = "Total Cases in Turkey",
+        subtitle = paste("From March 2020 to March 2021 Variation : ", var(data$total_case) ),
+       x = "Date",
+       y = "Total Cases"
+       )
+    
+
+plot_2 <- ggplot(data = data,aes(x = date, y = daily_death)) +
+  geom_point() +
+  geom_smooth(method = "loess", se = FALSE) + 
+  geom_hline(aes(yintercept = quantile(data$daily_death, 0.25, na.rm = TRUE))) +
+  geom_hline(aes(yintercept = quantile(data$daily_death, 0.5, na.rm = TRUE))) + 
+  geom_hline(aes(yintercept = quantile(data$daily_death, 0.75, na.rm = TRUE))) +
+  labs(
+    title = "Daily Deaths in Turkey",
+    subtitle = "From March 2020 to March 2021",
+    x = "Date",
+    y = "Daily Deaths",
+    )
+
+plot_3 <- ggplot(data = data, aes(x = total_intubated, y = total_case)) +
+  geom_point(color = data$total_intubated) +
+  labs(
+    title = "Total Intubated/Cases in Turkey",
+    subtitle = "From March 2020 to March 2021",
+    x = "Total Intubated",
+    y = "Total Cases"
+  )
+
+p <- plot_grid(plot_1, plot_2, plot_3, labels = "AUTO", nrow = 3)
+
+ggsave("General/Turkey Covd/plot.PNG", p)
+
+```
