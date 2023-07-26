@@ -4,6 +4,10 @@ Some projects i made to learn R basics & tensorflow usage on R
 
 You can take a look on graphs & codes I made
 
+## Turkey Covid Statistics
+
+![](https://github.com/MertKalkanci/R-Learning-Projects/blob/main/General/Turkey%20Covd/plot.PNG)
+
 ## Average forest fires prediction
 ![](https://github.com/MertKalkanci/R-Learning-Projects/blob/main/Tensorflow/forest_fire_lstm/co2_prediction_30_years.png)
 
