@@ -47,7 +47,7 @@ plot_2 <- ggplot(data = data,aes(x = date, y = daily_death)) +
     )
 
 plot_3 <- ggplot(data = data, aes(x = total_intubated, y = total_case)) +
-  geom_point() +
+  geom_point(aes(color = data$date)) +
   labs(
     title = "Total Intubated/Cases in Turkey",
     subtitle = "From March 2020 to November 2020",
