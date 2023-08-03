@@ -1,0 +1,69 @@
+```{R}
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(cowplot)
+library(DataExplorer)
+library(stringr)
+library(rvest)
+library(magrittr)
+```
+
+```{R}
+# Read in the data
+url <- "https://www.basketball-reference.com/leagues/NBA_2020_per_game.html"
+
+html <- read_html(url)
+html
+```
+
+```{R}
+table <- html %>% 
+    html_node("table") %>%
+    html_table()
+table
+
+table <- table %>%
+    select(MP, PTS, TRB) 
+head(table)
+
+table <- table %>%
+    mutate(MP = as.numeric(MP),
+           PTS = as.numeric(PTS),
+           TRB = as.numeric(TRB))
+head(table)
+```
+
+
+
+```{R}
+
+my_plot_1 <- ggplot(table, aes(x = MP, y = PTS)) +
+    geom_point(aes(color = PTS)) +
+    geom_smooth(method = "gam",aes(color = red)) +
+    geom_hline(aes(yintercept = quantile(PTS, 0.25, na.rm = TRUE))) +
+    geom_hline(aes(yintercept = mean(PTS, na.rm = TRUE))) +
+    geom_hline(aes(yintercept = quantile(PTS, 0.75, na.rm = TRUE))) +
+    labs(title = "Minutes Played vs Points Scored",
+         x = "Minutes Played",
+         y = "Points Scored",color = "Points Scored") 
+
+
+my_plot_2 <- ggplot(table, aes(x = MP, y = TRB)) +
+    geom_point(aes(color = TRB)) +
+    geom_smooth(method = "gam") +
+    geom_hline(aes(yintercept = quantile(TRB, 0.25, na.rm = TRUE))) +
+    geom_hline(aes(yintercept = mean(TRB, na.rm = TRUE))) +
+    geom_hline(aes(yintercept = quantile(TRB, 0.75, na.rm = TRUE))) +
+    labs(title = "Minutes Played vs Rebounds",
+         x = "Minutes Played",
+         y = "Rebounds",color = "Rebounds")
+
+plots <- plot_grid(my_plot_1, my_plot_2, nrow = 2)
+
+plots
+```
+
+```{R}
+ggsave("WebScraping/plots.png", plots)
+```
